@@ -79,6 +79,24 @@ npx ajv validate -s schemas/article.schema.json -d <(python3 scripts/extract_fro
 
 ---
 
+## World constants (1.16.1)
+
+These values are hardcoded in the engine. Treat them as ground truth; do not re-derive them from source unless verifying a discrepancy.
+
+| Constant | Value | Source class |
+|---|---|---|
+| Overworld sea level | y = 63 | `Level`, `ChunkGenerator` |
+| Overworld build height | 256 blocks (y 0–255) | `NoiseGeneratorSettings` (noise height 256) |
+| Nether build height | 128 blocks (y 0–127) | `NoiseGeneratorSettings` (noise height 128) |
+| Nether lava sea level | y = 32 | `NoiseGeneratorSettings` (nether preset sea_level) |
+| Nether ↔ Overworld coordinate scale | 8× (X and Z only; Y unchanged) | `Entity.changeDimension`, `ServerPlayer.changeDimension` |
+| Portal search radius (existing) | 128 blocks XZ | `PortalForcer.findPortal` |
+| Portal search radius (new placement) | ±16 blocks XZ | `PortalForcer.createPortal` |
+| Forced portal placement Y range (nether) | 70–118 | `PortalForcer.createPortal` |
+| Forced portal placement Y range (overworld) | 70–246 | `PortalForcer.createPortal` |
+
+---
+
 ## Answering questions with this KB
 
 ### Directory structure
@@ -97,7 +115,7 @@ npx ajv validate -s schemas/article.schema.json -d <(python3 scripts/extract_fro
 1. **Check `kb/index.md`** for the relevant topic. Each entry links to the article and shows its `summary`.
 2. **Read the linked article**. The `summary` field answers the question at a glance; the article body provides conditions, edge cases, and implementation details.
 3. **Translate to plain language**. Users are speedrunners, not Java programmers — describe behavior, not code. You may name the source class (e.g., "according to `StrongholdStructure`") to establish credibility, but do not quote Java.
-4. **Flag gaps**. If a topic has no article, say so explicitly and indicate what the article would need to cover. Do not invent mechanics.
+4. **Fill gaps**. If no article exists for the topic, do not just flag it — research and create it first. Find the relevant class(es) in `mc1.16.1/src/`, follow the Article authoring workflow above, write the article, register it in `kb/index.md`, then answer the question from the new article. Do not invent mechanics.
 
 ### Confidence and version notes
 
