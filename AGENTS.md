@@ -76,3 +76,38 @@ See `scripts/README.md`. Scripts read from `mc1.16.1/` and write structured outp
 # Validate frontmatter against schema (requires ajv-cli)
 npx ajv validate -s schemas/article.schema.json -d <(python3 scripts/extract_frontmatter.py kb/worldgen/stronghold.md)
 ```
+
+---
+
+## Answering questions with this KB
+
+### Directory structure
+
+| Path | Contents |
+|---|---|
+| `kb/index.md` | Master topic index; start here for discovery |
+| `kb/worldgen/` | Structure placement (strongholds, fortresses, bastions, villages) and terrain |
+| `kb/entities/` | Mob AI, aggression conditions, targeting, pathfinding |
+| `kb/rng/` | Java `Random` mechanics, seed derivation, manipulable RNG chains |
+| `kb/physics/` | Player velocity, collision, water/lava movement, elytra |
+| `kb/mechanics/` | Portal linking, loot tables, enchanting, fire resistance, etc. |
+
+### How to answer a user question
+
+1. **Check `kb/index.md`** for the relevant topic. Each entry links to the article and shows its `summary`.
+2. **Read the linked article**. The `summary` field answers the question at a glance; the article body provides conditions, edge cases, and implementation details.
+3. **Translate to plain language**. Users are speedrunners, not Java programmers — describe behavior, not code. You may name the source class (e.g., "according to `StrongholdStructure`") to establish credibility, but do not quote Java.
+4. **Flag gaps**. If a topic has no article, say so explicitly and indicate what the article would need to cover. Do not invent mechanics.
+
+### Confidence and version notes
+
+- All articles are pinned to **1.16.1**. Behavior in other versions may differ.
+- Where article confidence is partial (e.g., a field was obfuscated), the article body notes it explicitly under a **Caveats** section.
+- If an article's `mc_version` does not match the version being asked about, state the version mismatch before answering.
+
+### What this KB does not cover
+
+- Bedrock Edition (different codebase)
+- Versions other than 1.16.1 (unless a `mc_version` field says otherwise)
+- Subjective routing decisions (use community resources for those)
+- Mods or external tools
