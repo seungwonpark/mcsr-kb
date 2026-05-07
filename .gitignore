@@ -1,0 +1,26 @@
+# Minecraft decompiled source — private, never committed
+mc1.16.1/
+
+# Generation script cache and intermediate outputs
+.gen-cache/
+.analysis-cache/
+*.class
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Node (if any tooling is added)
+node_modules/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp

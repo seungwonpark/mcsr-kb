@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/seungwonpark/mcsr-kb/schemas/article.schema.json",
+  "title": "KB Article Frontmatter",
+  "description": "Schema for YAML frontmatter in mcsr-kb knowledge base articles",
+  "type": "object",
+  "required": ["title", "topic", "tags", "source_classes", "mc_version", "summary"],
+  "additionalProperties": false,
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Human-readable article title"
+    },
+    "topic": {
+      "type": "string",
+      "enum": ["worldgen", "entities", "rng", "physics", "mechanics"],
+      "description": "Top-level knowledge base topic"
+    },
+    "subtopic": {
+      "type": "string",
+      "description": "Optional finer-grained category within the topic"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
+      "minItems": 1,
+      "description": "Lowercase snake_case keywords for search and filtering"
+    },
+    "source_classes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Fully-qualified Java class names this article was derived from"
+    },
+    "mc_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+      "description": "Minecraft version this article applies to (e.g. 1.16.1)"
+    },
+    "summary": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "One-sentence direct answer — the most important field for agent consumption"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["complete", "partial", "stub"],
+      "default": "complete",
+      "description": "Coverage status: complete = fully verified, partial = some gaps, stub = placeholder"
+    }
+  }
+}
