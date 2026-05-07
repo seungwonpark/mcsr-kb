@@ -1,0 +1,23 @@
+{
+  "autoMemoryEnabled": false,
+  "permissions": {
+    "allow": [
+      "Bash(python3 scripts/find_class.py *)",
+      "Bash(python3 scripts/analyze_class.py *)",
+      "Bash(python3 scripts/extract_frontmatter.py *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command // \"\"' | grep -qE '^python( |$)' && echo '{\"decision\":\"block\",\"reason\":\"Use python3 instead of python. Replace '\"'\"'python'\"'\"' with '\"'\"'python3'\"'\"' in the command.\"}' || true"
+          }
+        ]
+      }
+    ]
+  }
+}
