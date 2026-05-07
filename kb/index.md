@@ -31,3 +31,4 @@ All articles, their one-sentence summaries, and coverage status.
 | Article | Summary | Status |
 |---|---|---|
 | [Nether Portal Generation](./mechanics/nether-portal-generation.md) | When a new destination portal is created, the game searches a ±16 XZ radius top-to-bottom for the best-fitting spot, selecting the candidate closest in 3D distance to the arriving entity — and Y is never scaled between dimensions, so your nether Y directly controls how deep the overworld portal spawns. | complete |
+| [Bastion Remnant Loot Tables](./mechanics/bastion-loot.md) | Every bastion type contains generic chests (bastion_other loot table) alongside at most one type-specific chest; generic chests are the only source of regular Obsidian and appear in all four variants. | complete |
