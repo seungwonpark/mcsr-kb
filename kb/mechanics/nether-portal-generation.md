@@ -18,8 +18,8 @@ When a player crosses a nether portal and no existing portal is found within 128
 ## Step-by-step logic
 
 1. **Scale X/Z, keep Y.** When crossing the nether boundary, X and Z are multiplied or divided by 8. Y stays the same. The entity used for all subsequent distance calculations is positioned at these scaled coordinates.
-2. **Phase 1 — natural fit scan.** For each XZ column within ±16 blocks, sweep from the world ceiling downward. When an air block is found, descend further while air continues — this lands at the *bottom of the topmost contiguous air pocket* in that column (i.e., the surface in open terrain, or the floor of the highest cave). Check whether a standard 4-wide × 5-tall portal frame fits there (solid floor, empty interior). Try all 4 possible orientations, starting from a world-seed-derived offset. Score each valid fit as squared 3D distance to the entity; keep the global minimum.
-3. **Phase 2 — reduced fit scan.** If Phase 1 found no valid spot, repeat the same column sweep but check a smaller 2-wide footprint and only 2 orientations. This succeeds in tighter spaces.
+2. **Phase 1 — natural fit scan.** For each XZ column within ±16 blocks, sweep from the world ceiling downward. When an air block is found, descend further while air continues — this lands at the *bottom of the topmost contiguous air pocket* in that column (i.e., the surface in open terrain, or the floor of the highest cave). Check whether a standard 4-wide × 5-tall portal frame fits there *and that a 3-block-wide perpendicular column around the frame is also clear* (solid floor, empty interior, empty front-and-back). Try all 4 possible orientations, starting from a world-seed-derived offset. Score each valid fit as squared 3D distance to the entity; keep the global minimum.
+3. **Phase 2 — reduced fit scan.** If Phase 1 found no valid spot, repeat the same column sweep but drop the perpendicular-clearance requirement (only the frame's own column must be clear) and try 2 of 4 orientations (the two perpendicular axes). This succeeds in tight spaces with no front-or-back clearance.
 4. **Phase 3 — forced placement.** If both scans fail, place the portal at the entity's exact XZ position with Y clamped to **[70, world_height − 10]** (nether: [70, 118]; overworld: [70, 246]).
 5. **Build.** Place an obsidian frame (4 wide, 5 tall outer dimensions) and light the portal blocks inside.
 
@@ -28,7 +28,7 @@ When a player crosses a nether portal and no existing portal is found within 128
 - Existing portal search radius: **128 blocks** (XZ square). `createPortal` is only called if this finds nothing.
 - New portal search radius: **±16 blocks XZ** from entity destination.
 - Column scan direction: **top to bottom** — each column yields at most one candidate (the bottom of the topmost air gap).
-- Winning candidate: **minimum squared 3D distance** from entity. When two candidates tie on distance, lower Y wins (secondary sort).
+- Winning candidate: **minimum squared 3D distance** from entity. The comparison is strict (`<`), so when two candidates tie on distance the **first encountered** in the iteration order wins (X from −16 to +16, then Z from −16 to +16, then Y from top to bottom). The "lower-Y secondary sort" is a property of *existing*-portal lookup (`findPortal`), not new-portal creation.
 - Y is **not** scaled: `entity.getY()` at destination = player's Y in source dimension.
 
 ## Constants and values

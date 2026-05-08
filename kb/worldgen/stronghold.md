@@ -35,22 +35,22 @@ The algorithm iterates over all 128 strongholds in ring order. For each strongho
 
 ## Ring layout
 
-The starting `spread` is 3 (the `spread` field of `StrongholdConfiguration`). After each ring completes, spread grows: `spread += 2·spread / (ringIndex + 1)`, then clamped to the remaining stronghold count.
+The starting `spread` is 3 (the `spread` field of `StrongholdConfiguration`). At the end of each ring, `ringIndex` is incremented, then `spread` grows by `spread += 2·spread / (ringIndex + 1)` (using the *new* ringIndex), then clamped to `count − i` where `i` is the loop index of the just-placed stronghold.
 
-| Ring | Strongholds | Center radius (chunks) | Radius range (chunks) | Radius range (blocks) |
-|------|------------|----------------------|----------------------|----------------------|
-| 0 | 3  | 128 | [88, 168] | [1408, 2688] |
-| 1 | 6  | 320 | [280, 360] | [4480, 5760] |
-| 2 | 10 | 512 | [472, 552] | [7552, 8832] |
-| 3 | 15 | 704 | [664, 744] | [10624, 11904] |
-| 4 | 21 | 896 | [856, 936] | [13696, 14976] |
-| 5 | 28 | 1088 | [1048, 1128] | [16768, 18048] |
-| 6 | 36 | 1280 | [1240, 1320] | [19840, 21120] |
-| 7 | 9  | 1472 | [1432, 1512] | [22912, 24192] |
+| Ring | Strongholds | Spread used for angle | Center radius (chunks) | Geometric radius range (chunks) | Geometric radius range (blocks) |
+|------|------------|----------------------|----------------------|----------------------|----------------------|
+| 0 | 3  | 3  | 128 | [88, 168] | [1408, 2688] |
+| 1 | 6  | 6  | 320 | [280, 360] | [4480, 5760] |
+| 2 | 10 | 10 | 512 | [472, 552] | [7552, 8832] |
+| 3 | 15 | 15 | 704 | [664, 744] | [10624, 11904] |
+| 4 | 21 | 21 | 896 | [856, 936] | [13696, 14976] |
+| 5 | 28 | 28 | 1088 | [1048, 1128] | [16768, 18048] |
+| 6 | 36 | 36 | 1280 | [1240, 1320] | [19840, 21120] |
+| 7 | 9  | 10 | 1472 | [1432, 1512] | [22912, 24192] |
 
-Radius is measured as Euclidean distance from (0, 0) to the stronghold's chunk center, in chunk units (multiply by 16 for blocks). The ±40-chunk spread on each ring comes from `(random.nextDouble() − 0.5) · distance · 2.5` = `(rnd − 0.5) · 80`.
+Radius is measured as Euclidean distance from (0, 0) to the stronghold's chunk center, in chunk units (multiply by 16 for blocks). The ±40-chunk spread on each ring comes from `(random.nextDouble() − 0.5) · distance · 2.5` = `(rnd − 0.5) · 80`. The biome-search step (next section) can shift the final position by up to 112 blocks horizontally on top of these geometric ranges.
 
-Strongholds within a ring are **evenly spaced** in angle (`2π / spread`), all sharing the same random offset drawn at the start of that ring. A new random angle offset is added when transitioning between rings.
+Strongholds within rings 0–6 are **evenly spaced** in angle (`2π / spread`), all sharing the same random offset drawn at the start of that ring. **Ring 7 is not evenly spaced**: see the edge case below. A new random angle offset is added when transitioning between rings.
 
 ## Constants and values
 
@@ -69,15 +69,15 @@ After the geometric position is computed, the game calls `biomeSource.findBiomeH
 
 ## Edge cases
 
-- **Ring 7 is truncated**: the spread formula would yield 45 for ring 7, but only 9 strongholds remain (128 − 119), so spread is clamped to 9. The ring-7 strongholds are therefore not evenly spaced by 2π/9 — they use whatever spread was set.
+- **Ring 7 spread off-by-one**: the spread formula yields 45 for ring 7, then is clamped by `Math.min(spread, count − i)`. Because `i` is the index of the *just-placed* stronghold (118 at this point), the clamp evaluates to `min(45, 128 − 118) = 10`, not 9. Only 9 strongholds end up placed in ring 7 (the loop runs out at `i=127`), but the angle increment used is **2π/10 = 36°**, leaving a 36° gap. Do **not** assume ring 7 is evenly spaced by 2π/9.
 - **Chunk alignment**: positions are stored as `ChunkPos` (chunk coordinates), so all strongholds are aligned to chunk boundaries (multiples of 16 blocks).
 - **Y coordinate**: `generateStrongholds()` stores only X and Z chunk positions. The Y placement (the structure starts below sea level) is determined at chunk generation time by `StrongholdFeature.StrongholdStart.generatePieces`, which calls `moveBelowSeaLevel` with a margin of 10.
 
 ## Speedrun relevance
 
-- **Eye of Ender** traces a 2D vector toward the nearest stronghold's chunk center. Two throws from different positions give two angles; the intersection locates the stronghold chunk.
+- **Eye of Ender** targets the nearest stronghold's chunk center at fixed Y=32 (`ChunkGenerator.findNearestMapFeature`). Two throws from different positions give two angles; the intersection locates the stronghold chunk.
 - **Seed tools** (e.g., Ninjabrain Bot) compute all ring-0 positions directly from the world seed, bypassing the throw requirement.
-- Ring 0 is always the Any% target: 3 strongholds within 1408–2688 blocks of spawn.
+- Ring 0 is always the Any% target: 3 strongholds within roughly 1408–2688 blocks of spawn (geometric range), or up to ±112 blocks farther after biome shift.
 - Ring-0 strongholds are roughly 120° apart in angle, but the exact angles depend on the world seed's first `nextDouble()` draw.
 
 ## Caveats

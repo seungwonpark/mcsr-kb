@@ -60,12 +60,15 @@ Opening certain containers calls `PiglinAi.angerNearbyPiglins(player, true)` —
 radius: player.getBoundingBox().inflate(16.0)   // ~16 blocks from player edge
 filter: PiglinAi.isIdle(piglin)                 // only IDLE piglins are affected
 filter: !requireLineOfSight || canSee(piglin, player)
-action: setAngerTarget(piglin, player)
-         → sets ANGRY_AT = player UUID, expiry 600 ticks (30 s)
-         → if universalAnger gamerule: sets UNIVERSAL_ANGER, expiry 600 ticks
+action: if universalAnger gamerule:
+            setAngerTargetToNearestTargetablePlayerIfFound(piglin, player)
+        else:
+            setAngerTarget(piglin, player)
+                → sets ANGRY_AT = player UUID, expiry 600 ticks (30 s)
+                → if universalAnger: also sets UNIVERSAL_ANGER memory, expiry 600 ticks
 ```
 
-Only **idle** piglins are targeted by this call. Piglins already in FIGHT or other activities are not affected.
+Only **idle** piglins are targeted by this call. Piglins already in FIGHT or other activities are not affected. The `universalAnger` gamerule defaults to off; with it on, the trigger anger any nearby visible player rather than the one who broke the block.
 
 ## ANGRY_AT memory and duration
 
@@ -90,7 +93,7 @@ If the player puts on gold armor after being set as a `ANGRY_AT` target, the **a
 
 ## Zombification
 
-`Piglin.isConverting()` returns true if the piglin is not in a `piglinSafe` dimension and is not `immuneToZombification`. Each server tick that this is true increments `timeInOverworld`. When `timeInOverworld > 300` (15 seconds), `finishConversion` is called and the entity converts to `ZombifiedPiglin`.
+`Piglin.isConverting()` returns true if the piglin is not in a `piglinSafe` dimension, is not `immuneToZombification`, and is not `noAi`. Each server tick that this is true increments `timeInOverworld`; otherwise the counter resets to 0. The check is `timeInOverworld > 300` (strictly greater), so `finishConversion` fires on tick **301** (≈15.05 s after entry, not exactly 15 s) and the entity converts to `ZombifiedPiglin`.
 
 Zombified piglins are a separate entity type and do not share aggression state with piglins.
 
