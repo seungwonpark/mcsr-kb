@@ -18,7 +18,8 @@ All articles, their one-sentence summaries, and coverage status.
 
 | Article | Summary | Status |
 |---|---|---|
-| *(none yet)* | | |
+| [Stronghold RNG and the (0,0) Nether Fossil Identity](./rng/stronghold-rng.md) | Stronghold ring placement seeds a Random directly from the world seed; at chunk (0,0), setLargeFeatureSeed collapses to setSeed(worldSeed), so a (0,0) nether fossil shares the LCG stream. | complete |
+| [Structures at Chunk (0,0) That Leak the Stronghold RNG](./rng/zero-zero-chunk-leaks.md) | Only a (0,0) nether fossil leaks a free divine-travel hint (22.5°) fine enough to beat the 120° ring-0 spacing. Every other (0,0) structure stops at 90°, too coarse without seedfinder compute. | complete |
 
 ## Physics (`physics/`)
 
