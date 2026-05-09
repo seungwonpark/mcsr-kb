@@ -42,3 +42,7 @@ All articles cite the relevant Java class(es) in their frontmatter so claims can
 ## Version
 
 All content targets **Minecraft Java Edition 1.16.1**. Article frontmatter records `mc_version` for future multi-version support.
+
+## Disclaimer
+
+This project is an unofficial fan resource and is not affiliated with, endorsed by, or connected to Mojang Studios or Microsoft. Minecraft is a trademark of Mojang Studios. All content is derived from independently decompiled game code for educational and research purposes only.
